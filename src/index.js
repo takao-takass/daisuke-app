@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import StateBasic from './StateBasic';
 import History from './History';
+import MyHello from './MyHello';
+import StateParent from './StateParent';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -28,11 +30,21 @@ setInterval(() => {
 }, 1000);
 */
 
+/*
 root.render(
   <React.StrictMode>
     <StateBasic init={0} />
     <History histories={[]} />
   </React.StrictMode>
+);
+*/
+
+// root.render(
+//   <MyHello myName="山田" />
+// )
+
+root.render(
+  <StateParent />
 );
 
 // If you want to start measuring performance in your app, pass a function
