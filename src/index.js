@@ -2,12 +2,36 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import StateBasic from './StateBasic';
+import History from './History';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+/*
 root.render(
   <React.StrictMode>
     <App />
+  </React.StrictMode>
+);
+*/
+/*
+setInterval(() => {
+  root.render(
+    <>
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+      <p>Current time : {(new Date()).toLocaleString()}</p>
+    </>
+  )  
+}, 1000);
+*/
+
+root.render(
+  <React.StrictMode>
+    <StateBasic init={0} />
+    <History histories={[]} />
   </React.StrictMode>
 );
 

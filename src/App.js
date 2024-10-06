@@ -1,7 +1,12 @@
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
+const currentDateTime = () => {
+  const datetime = (new Date()).toLocaleString();
+  console.log(datetime);
+}
+
+export default function App() {
   return (
     <div className="App">
       <header className="App-header">
@@ -18,8 +23,7 @@ function App() {
           Learn React
         </a>
       </header>
+      <button onClick={currentDateTime}>ログに時刻をだすからね</button>
     </div>
   );
 }
-
-export default App;
