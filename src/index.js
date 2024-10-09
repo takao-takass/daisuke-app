@@ -1,18 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import App from './App';
 import StateForm from './StateForm';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-/*
+
 root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
-*/
+
 /*
 setInterval(() => {
   root.render(
@@ -39,9 +40,9 @@ root.render(
 //   <MyHello myName="山田" />
 // )
 
-root.render(
-  <StateForm />
-);
+// root.render(
+//   <StateForm />
+// );
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
