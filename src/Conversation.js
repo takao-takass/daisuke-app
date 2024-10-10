@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/default.css'; // スタイルシートをインポート
+import 'highlight.js/styles/default.css';
+
+const messageStreamUrl = process.env.REACT_APP_MESSAGE_STREAM_URL;
 
 export default function Conversation() {
   const [messages, setMessages] = useState([]);
@@ -27,7 +29,7 @@ export default function Conversation() {
       setNewMessage('');
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/conversation/message', {
+        const response = await fetch(messageStreamUrl, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -38,17 +40,31 @@ export default function Conversation() {
           })
         });
 
-        addMessage('daisuke', '');
+        if (!response.ok) {
+          throw new Error('Failed to start SSE stream');
+        }
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
+        addMessage('daisuke', '');
         let apiMessage = '';
 
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
-          apiMessage += decoder.decode(value, { stream: true });
-          updateLastMessage('daisuke', apiMessage);
+          if (done) {
+            break;
+          }
+          const chunk = decoder.decode(value, { stream: true });
+
+          for (const line of chunk.split('\r\n')) {
+            if (line.startsWith('data: ')) {
+              const data = line.replace('data: ', '');
+              apiMessage += data === '' 
+                ? '\r\n'
+                : data;
+              updateLastMessage('daisuke', apiMessage);
+            }
+          }
         }
 
       } catch (error) {
@@ -58,11 +74,6 @@ export default function Conversation() {
   };
 
   useEffect(() => {
-    console.log('Messages updated:', messages);
-  }, [messages]);
-
-  useEffect(() => {
-    // メッセージが更新されるたびにコードブロックをハイライト
     document.querySelectorAll('pre code').forEach((block) => {
       hljs.highlightBlock(block);
     });
