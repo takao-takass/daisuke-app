@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react';
+import { marked } from 'marked';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/default.css'; // スタイルシートをインポート
 
 export default function Conversation() {
   const [messages, setMessages] = useState([]);
@@ -6,6 +9,14 @@ export default function Conversation() {
 
   const addMessage = (from, message) => {
     setMessages(m => [...m, { from, message }]);
+  };
+
+  const updateLastMessage = (from, message) => {
+    setMessages(m => {
+      const updatedMessages = [...m];
+      updatedMessages[updatedMessages.length - 1] = { from, message };
+      return updatedMessages;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -16,16 +27,30 @@ export default function Conversation() {
       setNewMessage('');
 
       try {
-        const response = await fetch('https://httpbin.org/post', {
+        const response = await fetch('http://127.0.0.1:8000/conversation/message', {
           method: 'POST',
           headers: {
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ message })
+          body: JSON.stringify({ 
+            prompt: message
+          })
         });
-        const data = await response.json();
-        const apiMessage = JSON.stringify(data);
-        addMessage('daisuke', apiMessage);
+
+        addMessage('daisuke', '');
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let apiMessage = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          apiMessage += decoder.decode(value, { stream: true });
+          updateLastMessage('daisuke', apiMessage);
+        }
+
       } catch (error) {
         console.error('Error fetching API:', error);
       }
@@ -34,6 +59,13 @@ export default function Conversation() {
 
   useEffect(() => {
     console.log('Messages updated:', messages);
+  }, [messages]);
+
+  useEffect(() => {
+    // メッセージが更新されるたびにコードブロックをハイライト
+    document.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightBlock(block);
+    });
   }, [messages]);
 
   const headMarginStyle = {
@@ -46,7 +78,7 @@ export default function Conversation() {
       {messages.map((msg, index) => (
         <div key={index}>
           <h4>{msg.from}</h4>
-          <div>{msg.message}</div>
+          <div dangerouslySetInnerHTML={{ __html: marked(msg.message) }} />
         </div>
       ))}
 
