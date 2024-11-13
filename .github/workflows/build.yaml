@@ -36,3 +36,5 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/daisuke-app:${{ steps.vars.outputs.short_sha }}
+        build-args: |
+          REACT_APP_MESSAGE_STREAM_URL=${{ secrets.REACT_APP_MESSAGE_STREAM_URL }}
