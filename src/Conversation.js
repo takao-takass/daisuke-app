@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/default.css';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 
 const messageStreamUrl = process.env.REACT_APP_MESSAGE_STREAM_URL;
+const createConversationUrl = process.env.REACT_APP_CREATE_CONVERSATION_URL;
 
 export default function Conversation() {
   const [messages, setMessages] = useState([]);
@@ -12,6 +15,10 @@ export default function Conversation() {
   const addMessage = (from, message) => {
     setMessages(m => [...m, { from, message }]);
   };
+
+  const resetMessages = () => {
+    setMessages([]);
+  }
 
   const updateLastMessage = (from, message) => {
     setMessages(m => {
@@ -73,6 +80,29 @@ export default function Conversation() {
     }
   };
 
+  
+  const handleCreateConversation = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(createConversationUrl, {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create conversation');
+      }
+
+      resetMessages();
+
+    } catch (error) {
+      console.error('Error fetching API:', error);
+    }
+  };
+
   useEffect(() => {
     document.querySelectorAll('pre code').forEach((block) => {
       hljs.highlightBlock(block);
@@ -93,15 +123,20 @@ export default function Conversation() {
         </div>
       ))}
 
-      <form onSubmit={handleSubmit} style={headMarginStyle}>
-        <textarea
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="メッセージを入力してください"
-        />
-        <button type="submit">送信</button>
-      </form>
-
+      <Form onSubmit={handleSubmit} style={headMarginStyle}>
+        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+          <Form.Control 
+           as="textarea"
+           rows={3} 
+           value={newMessage}
+           onChange={(e) => setNewMessage(e.target.value)}/>
+        </Form.Group>
+        <Button type="submit" variant="outline-dark">送信</Button>
+      </Form>
+      
+      <Form onSubmit={handleCreateConversation} style={headMarginStyle}>
+        <Button type="submit" variant="outline-dark">新規</Button>
+      </Form>
     </div>
   );
 }
