@@ -18,18 +18,18 @@ export const msalConfig = {
     auth: {
         clientId: entraIdClientId,
         authority: `https://login.microsoftonline.com/${entraIdTenantId}`,
-        redirectUri: 'http://localhost:3000',
+        redirectUri: window.location.origin,
     },
     cache: {
         cacheLocation: "sessionStorage", // This configures where your cache will be stored
         storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
     },
-    system: {	
-        loggerOptions: {	
-            loggerCallback: (level, message, containsPii) => {	
-                if (containsPii) {		
-                    return;		
-                }		
+    system: {
+        loggerOptions: {
+            loggerCallback: (level, message, containsPii) => {
+                if (containsPii) {
+                    return;
+                }
                 switch (level) {
                     case LogLevel.Error:
                         console.error(message);
@@ -45,9 +45,9 @@ export const msalConfig = {
                         return;
                     default:
                         return;
-                }	
-            }	
-        }	
+                }
+            }
+        }
     }
 };
 
