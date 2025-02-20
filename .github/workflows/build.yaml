@@ -37,4 +37,7 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/daisuke-app:${{ steps.vars.outputs.short_sha }}
         build-args: |
-          REACT_APP_MESSAGE_STREAM_URL=${{ secrets.REACT_APP_MESSAGE_STREAM_URL }}
+          REACT_APP_MESSAGE_STREAM_URL=${{ vars.REACT_APP_MESSAGE_STREAM_URL }}
+          REACT_APP_CREATE_CONVERSATION_URL=${{ vars.REACT_APP_CREATE_CONVERSATION_URL }}
+          REACT_APP_ENTRA_CLIENT_ID=${{ vars.REACT_APP_ENTRA_CLIENT_ID }}
+          REACT_APP_ENTRA_TENANT_ID=${{ vars.REACT_APP_ENTRA_TENANT_ID }}
